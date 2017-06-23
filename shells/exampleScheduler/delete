@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ $1 != "job1" ] ; then
+exit 2
+fi
+
+

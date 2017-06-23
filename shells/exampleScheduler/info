@@ -1,0 +1,2 @@
+#!/bin/sh
+echo '[{"partition":"p1"},{"partition":"p3"}]'
