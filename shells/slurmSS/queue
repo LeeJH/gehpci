@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# python script maybe better to deal with json. 
+
+function oneInfo {
+# deal for squeue -o   "%i %P %j %u %T %M  %D %R"
+# like :
+# JOBID PARTITION NAME USER STATE TIME  NODES NODELIST(REASON)
+# 1392219 work sleep nscc-gz_jiangli RUNNING 1:31  1 cn4816
+# 
+  if [ $# -ne 8 ] ; then 
+  return 
+  fi
+  echo "{"
+  echo \"jobid\":\"$1\" #  $#
+  echo ,\"partition\":\"$2\"
+  echo ,\"name\":\"$3\"
+#  echo \"username\":\"$4\"
+  echo ,\"jobstate\":\"$5\"
+#  echo \"timecost\":\"$6\"
+  echo ,\"nodes\":$7
+#  echo \"nodelist\":\"$8\"
+  echo  ,\"infos\":\"{ username:$4, timecost:$6,landrs:$8  }\"
+#	echo username:$4,
+#	echo timecost:$6,
+#	echo landrs:$8
+#  echo }\"
+  echo "}"
+}
+
+
+jobid=$1
+output=`squeue -o   "%i %P %j %u %T %M  %D %R" `
+retcode=$?
+if [ $retcode -ne 0 ] ; then
+	exit $retcode
+fi
+
+echo "["
+
+
+
+#loop line of output
+OLD_IFS=$IFS
+IFS=$'\n'
+itemnum=0
+for items in $output
+do
+  itemnum=$[ $itemnum + 1 ]
+  if [ $itemnum -eq 1 ] ; then
+   continue
+  fi
+  
+  if [ $itemnum -gt 2 ] ; then
+   echo ","
+  fi
+
+  IFS=$OLD_IFS
+  #echo onInfo $items
+  oneInfo $items
+
+done
+
+
+
+echo "]"
+exit 0 

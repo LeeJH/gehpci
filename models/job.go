@@ -23,7 +23,7 @@ type HPCScheduler interface {
 	Info() ([]HPCResource, error)    // such as sinfo
 	Queue() ([]HPCJob, error)        // such as squeue
 	Submit(*HPCJob) (string, error)  // such as sbatch
-	JobInfo(string) (*HPCJob, error) // such as sacct -j  ?
+	JobInfo(string) ([]HPCJob, error) // such as sacct -j  ?
 	Delete(string) error             // such as scancel
 	Name() string                    // Got the name of scheduler
 }
@@ -63,7 +63,7 @@ func (j *HPCJob) Submit() (string, error) {
 	return modelsScheduler.Submit(j)
 }
 
-func JobInfo(jobid string) (*HPCJob, error) {
+func JobInfo(jobid string) ([]HPCJob, error) {
 	return modelsScheduler.JobInfo(jobid)
 }
 
@@ -120,8 +120,11 @@ func (*exampleScheduler) Queue() ([]HPCJob, error) {
 func (*exampleScheduler) Submit(*HPCJob) (jobid string, err error) {
 	return "job1", nil
 }
-func (*exampleScheduler) JobInfo(string) (job *HPCJob, err error) {
-	return &HPCJob{Name: "job1"}, nil
+func (*exampleScheduler) JobInfo(string) ([]HPCJob, error) {
+        //#var exampljobss []HPCJob{ HPCJob{ Name: "job1"}}
+        exampljobss := make([]HPCJob,1)
+	exampljobss[0] = HPCJob{ Name: "job1"}
+	return exampljobss, nil
 }
 func (*exampleScheduler) Delete(string) error {
 	return nil
@@ -135,9 +138,10 @@ type shellScheduler struct {
 }
 
 func (ss *shellScheduler) run(filename string, mydata interface{}) error {
-	log.Println("start " + filename)
+	//log.Println("start " + filename)
 	shellcmd := ss.shelldir + "/" + filename //path.Join(ss.shelldir, filename)
 	result, err := ShellRun(shellcmd)
+        log.Printf("Run shell %s : %d \n %s \n",shellcmd , result.Retcode , result.Output)
 	if err != nil {
 		return err
 	}
@@ -181,7 +185,7 @@ func (ss *shellScheduler) Info() ([]HPCResource, error) {
 }
 
 func (ss *shellScheduler) Queue() ([]HPCJob, error) {
-	jobl := make([]HPCJob, 2)
+	jobl := make([]HPCJob, 0)
 	err := ss.run("queue", &jobl)
 	return jobl, err
 }
@@ -226,10 +230,10 @@ func (ss *shellScheduler) Submit(job *HPCJob) (jobid string, err error) {
 
 	return result.Output, nil
 }
-func (ss *shellScheduler) JobInfo(jobid string) (job *HPCJob, err error) {
-	job = &HPCJob{}
-	err = ss.run("jobinfo "+jobid, job)
-	return job, err
+func (ss *shellScheduler) JobInfo(jobid string) ([]HPCJob,  error) {
+	jobss := make([]HPCJob, 0)
+	err := ss.run("jobinfo "+jobid, jobss)
+	return jobss, err
 }
 func (ss *shellScheduler) Delete(jobid string) error {
 	var resultstr string

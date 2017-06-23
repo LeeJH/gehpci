@@ -1,0 +1,2 @@
+#!/bin/sh
+echo job$gehpci_Name$gehpci_Cores

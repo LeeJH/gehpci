@@ -1,0 +1,54 @@
+#!/bin/bash
+
+function oneInfo {
+# deal for sinfo -o "%P %a %T   %.5D "
+# like :
+# PARTITION AVAIL STATE   NODES
+# commercial up drained*      10
+  if [ $# -ne 4 ] ; then 
+  return 
+  fi
+  echo "{"
+  echo \"partition\":\"$1\", #  $#
+  echo \"state\":\"$3\",
+  echo \"nodes\":\"$4\"
+  echo "}"
+}
+
+
+jobid=$1
+output=`sinfo -o "%P %a %T   %.5D " `
+retcode=$?
+if [ $retcode -ne 0 ] ; then
+	exit $retcode
+fi
+
+echo "["
+
+
+
+#loop line of output
+OLD_IFS=$IFS
+IFS=$'\n'
+itemnum=0
+for items in $output
+do
+  itemnum=$[ $itemnum + 1 ]
+  if [ $itemnum -eq 1 ] ; then
+   continue
+  fi
+  
+  if [ $itemnum -gt 2 ] ; then
+   echo ","
+  fi
+
+  IFS=$OLD_IFS
+  #echo onInfo $items
+  oneInfo $items
+
+done
+
+
+
+echo "]"
+exit 0 

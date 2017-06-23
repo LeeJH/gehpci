@@ -1,0 +1,11 @@
+#!/bin/sh
+jobid=$1
+output=`scancel $jobid`
+retcode=$?
+if [ $retcode -ne 0 ] ; then
+	exit $retcode
+fi
+
+exit 0 
+
+exit 2

@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# python script maybe better to deal with json. 
+
+function oneInfo {
+# deal for sacct 
+#yhacct -Pj 1392219 --format=jobid,partition,jobname,nnodes,ntasks,state,exitcode,elapsed
+#JobID|Partition|JobName|NNodes|NTasks|State|ExitCode|Elapsed
+#1392219|work|sleep|1|1|COMPLETED|0:0|01:00:00
+# 
+  if [ $# -ne 8 ] ; then 
+  return 
+  fi
+  echo "{"
+  echo \"jobid\":\"$1\" #  $#
+  echo ,\"partition\":\"$2\"
+  echo ,\"name\":\"$3\"
+  echo ,\"nodes\":$4
+  echo ,\"cores\":$5
+  echo ,\"jobstate\":\"$6\"
+#  echo ,\"exitcode\":$7
+  exitcode=$7
+#  echo \"elapsed\":\"$8\"
+  elapsed=$8
+ # echo  ,\"infos\":\"exitcode=$7\;elapsed=$8\"
+#	echo username:$4,
+#	echo timecost:$6,
+#	echo landrs:$8
+#  echo }\"
+  echo "}"
+}
+
+
+jobid=$1
+output=` sacct --format=jobid,partition,jobname,nnodes,ntasks,state,exitcode,elapsed -Pj $jobid `
+retcode=$?
+if [ $retcode -ne 0 ] ; then
+	exit $retcode
+fi
+
+echo "["
+
+
+
+#loop line of output
+OLD_IFS=$IFS
+IFS=$'\n'
+itemnum=0
+for items in $output
+do
+  itemnum=$[ $itemnum + 1 ]
+  if [ $itemnum -eq 1 ] ; then
+   continue
+  fi
+  
+  if [ $itemnum -gt 2 ] ; then
+   echo ","
+  fi
+
+  #IFS=$OLD_IFS
+  IFS=$'|'
+  #echo onInfo $items
+  oneInfo $items
+
+done
+IFS=$OLD_IFS
+
+
+echo "]"
+exit 0 
