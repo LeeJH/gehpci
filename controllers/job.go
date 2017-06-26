@@ -3,13 +3,11 @@ package controllers
 import (
 	"encoding/json"
 	"gehpci/models"
-
-	"github.com/astaxie/beego"
 )
 
 // Operations about Command
 type JobController struct {
-	beego.Controller
+	BaseController //beego.Controller
 }
 
 // @Title Submit
@@ -18,6 +16,7 @@ type JobController struct {
 // @Param	body	body	models.HPCJob	true	"The job object"
 // @Success 200 {string} result
 // @Failure 403   err info
+// @Failure 401 need login
 // @router /:machine [post]
 func (c *JobController) Submit() {
 	job := &models.HPCJob{}
@@ -42,13 +41,15 @@ func (c *JobController) Submit() {
 // @Param       resource            query    bool  false            "if query this, will return resource info"
 // @Success 200 {object} models.HPCJob
 // @Failure 403 {error} body is err info
+// @Failure 401 need login
 // @router /:machine [get]
 func (c *JobController) Queue() {
 	resource := c.Ctx.Input.Query("resource")
 	if resource == "true" {
 		resl, err := models.ResourceInfo()
 		if err != nil {
-			serveError403(&c.Controller, err)
+			//serveError403(&c.Controller, err)
+			c.serveErrorCode(403, err)
 			return
 		}
 		c.Data["json"] = resl
@@ -58,7 +59,8 @@ func (c *JobController) Queue() {
 
 	jobs, err := models.JobQueue()
 	if err != nil {
-		serveError403(&c.Controller, err)
+		//serveError403(&c.Controller, err)
+		c.serveErrorCode(403, err)
 		return
 	}
 	c.Data["json"] = jobs
@@ -71,6 +73,7 @@ func (c *JobController) Queue() {
 // @Param       jobid            path    string  true            "The jobid"
 // @Success 200 {object} models.HPCJob
 // @Failure 403  err info
+// @Failure 401 need login
 // @router /:machine/:jobid [get]
 func (c *JobController) JobInfo() {
 	jobid := c.Ctx.Input.Param(":jobid")
@@ -89,6 +92,7 @@ func (c *JobController) JobInfo() {
 // @Param       jobid            path    string  true            "The jobid"
 // @Success 200 {string} result
 // @Failure 403 {error} body is err info
+// @Failure 401 need login
 // @router /:machine/:jobid [delete]
 func (c *JobController) Delete() {
 	jobid := c.Ctx.Input.Param(":jobid")

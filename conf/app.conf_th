@@ -1,0 +1,14 @@
+appname = gehpci
+httpport = 9090
+runmode = dev
+autorender = false
+copyrequestbody = true
+EnableDocs = true
+sessionon = true
+distmode = local
+jobmode = shell
+; local for local run , most basic mode , for self use . 
+[dist]
+auth = local
+[shell]
+job = ./shells/slurmSS

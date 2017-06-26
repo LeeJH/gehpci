@@ -15,7 +15,7 @@ import (
 
 // Operations about Command
 type FileController struct {
-	beego.Controller
+	BaseController //beego.Controller
 }
 
 // @Title Delete
@@ -25,6 +25,7 @@ type FileController struct {
 // @Param       all            query    bool  false            "if query this, will remove all"
 // @Success 200 {string} result
 // @Failure 403 {error} body is err info
+// @Failure 401 need login
 // @router /:machine/:pathname/* [delete]
 func (c *FileController) Delete() {
 	pathname, _, _ := getPath(&c.Controller)
@@ -56,6 +57,7 @@ func (c *FileController) Delete() {
 // @Param       mkdir            query    bool  false            "if query this, will mkdir "
 // @Success 200 {common.Result} result
 // @Failure 403 {err} body is err info
+// @Failure 401 need login
 // @router /:machine/:pathname/* [get]
 func (c *FileController) ListorDownload() {
 	pathname, _, _ := getPath(&c.Controller)
@@ -144,6 +146,7 @@ func downloadFile(fc *beego.Controller, filename string) (err error) {
 // @Param       simple            query    bool  false            "if query this,only return `name` and `isDir`"
 // @Success 200 {common.Result} result
 // @Failure 403 {err} body is err info
+// @Failure 401 need login
 // @router /list/:machine/:pathname/* [get]
 func (c *FileController) ListDir() {
 	pathname, _, _ := getPath(&c.Controller)

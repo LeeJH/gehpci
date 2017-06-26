@@ -68,3 +68,32 @@ func (c *AuthController) Status() {
 	}
 	c.ServeJSON()
 }
+
+func checkLogin(baseFunc func(*beego.Controller)) func(*beego.Controller) {
+	retFunc := func(bci *beego.Controller) {
+		sess := bci.StartSession()
+		username := sess.Get("username")
+		if username == nil {
+			bci.Data["json"] = "not login"
+			bci.Ctx.Output.SetStatus(401)
+			bci.DestroySession()
+			bci.ServeJSON()
+			return
+		}
+		baseFunc(bci)
+		return
+	}
+	return retFunc
+}
+
+func prepareCheckLogin(c *beego.Controller) {
+	sess := c.StartSession()
+	username := sess.Get("username")
+	if username == nil {
+		c.Data["json"] = "not login"
+		c.Ctx.Output.SetStatus(401)
+		c.DestroySession()
+		c.ServeJSON()
+		c.StopRun()
+	}
+}
