@@ -1,2 +1,57 @@
 #!/bin/sh
-echo job$gehpci_Name$gehpci_Cores
+# gehpci_JobFile=string   //
+# gehpci_Partition=string   //
+# gehpci_Infos=string       //#
+# gehpci_JobState=string    //#
+# gehpci_Nodes=0            //#
+# 
+# gehpci_Name=string        //
+# gehpci_JobID=string       //#
+# gehpci_JobArgs=string  //
+# gehpci_Cores=0    //
+# gehpci_TimeLimit=0  //
+# gehpci_Args=string  //
+# gehpci_Dir=string  //
+
+if [ s$gehpci_Dir != s ] ; then 
+  cd $gehpci_Dir
+fi
+
+cmd="sbatch "
+
+if [ s$gehpci_Partition != s ] ; then
+cmd=${cmd}" -p $gehpci_Partition"
+fi
+
+if [ s$gehpci_Nodes != s ] && [ $gehpci_Nodes -gt 0 ] ; then
+cmd=${cmd}" -N $gehpci_Nodes"
+fi
+
+if [ s$gehpci_Cores != s ] && [ $gehpci_Cores -gt 0 ] ; then
+cmd=${cmd}" -n $gehpci_Cores"
+fi
+
+if [ s$gehpci_Name != s ] ; then
+cmd=${cmd}" -J $gehpci_Name"
+fi
+
+if [ s$gehpci_TimeLimit != s  ] && [ $gehpci_TimeLimit -gt 0 ] ; then
+gehpci_TimeLimit_min=$[ $gehpci_TimeLimit / 60 + 1 ]
+cmd=${cmd}" -t $gehpci_TimeLimit_min"
+fi
+
+if [ s$gehpci_Args != s ] ; then
+cmd=${cmd}" $gehpci_Args"
+fi
+
+cmd=${cmd}" $gehpci_JobFile $gehpci_JobArgs"
+
+retstr=`$cmd`
+retcode=$?
+jobid=${retstr:20}
+echo $jobid
+exit $retcode
+
+
+
+

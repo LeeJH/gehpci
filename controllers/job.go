@@ -40,7 +40,7 @@ func (c *JobController) Submit() {
 // @Description Search Job in Queue
 // @Param       machine            path    string  true            "The machine name"
 // @Param       resource            query    bool  false            "if query this, will return resource info"
-// @Success 200 {models.HPCJob} result
+// @Success 200 {object} models.HPCJob
 // @Failure 403 {error} body is err info
 // @router /:machine [get]
 func (c *JobController) Queue() {

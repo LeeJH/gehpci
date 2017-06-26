@@ -154,7 +154,7 @@ func (ss *shellScheduler) run(filename string, mydata interface{}) error {
 	default:
 		json.Unmarshal([]byte(result.Output), mydata)
 	}
-
+        log.Printf("Unmarshal result:\n %#v \n", mydata)
 	// if retjson {
 	// 	json.Unmarshal([]byte(result.Output), mydata)
 	// } else {
@@ -232,7 +232,7 @@ func (ss *shellScheduler) Submit(job *HPCJob) (jobid string, err error) {
 }
 func (ss *shellScheduler) JobInfo(jobid string) ([]HPCJob,  error) {
 	jobss := make([]HPCJob, 0)
-	err := ss.run("jobinfo "+jobid, jobss)
+	err := ss.run("jobinfo "+jobid, &jobss)
 	return jobss, err
 }
 func (ss *shellScheduler) Delete(jobid string) error {

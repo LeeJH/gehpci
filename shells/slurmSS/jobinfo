@@ -11,12 +11,16 @@ function oneInfo {
   if [ $# -ne 8 ] ; then 
   return 
   fi
+  cores=$5
+  if [ s$cores == s ] ; then
+  cores=0
+  fi
   echo "{"
   echo \"jobid\":\"$1\" #  $#
   echo ,\"partition\":\"$2\"
   echo ,\"name\":\"$3\"
   echo ,\"nodes\":$4
-  echo ,\"cores\":$5
+  echo ,\"cores\":$cores
   echo ,\"jobstate\":\"$6\"
 #  echo ,\"exitcode\":$7
   exitcode=$7
