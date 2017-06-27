@@ -68,6 +68,7 @@ func init() {
 }
 
 type CommanderD struct {
+	setUid uint32
 }
 
 func (c *CommanderD) RunCommand(cmd *Command) (result *CommandResult, err error) {
@@ -82,6 +83,14 @@ func (c *CommanderD) RunCommand(cmd *Command) (result *CommandResult, err error)
 	oscmd := exec.Command(cmd.Name, cmd.Args...)
 	if !cmd.Silence {
 		oscmd.Stdout, oscmd.Stderr = &outbuf, &errbuf
+	}
+	// if setuid = true
+	if c.setUid != 0 {
+		uid := c.setUid
+		sysattr := &syscall.SysProcAttr{
+			Credential: &syscall.Credential{Uid: uint32(uid)},
+		}
+		oscmd.SysProcAttr = sysattr
 	}
 	oscmd.Env = cmd.Env
 	oscmd.Dir = cmd.Dir

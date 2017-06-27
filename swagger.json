@@ -1,0 +1,862 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "beego Test API",
+        "description": "beego has a very cool tools to autogenerate documents for your API",
+        "version": "1.0.0",
+        "termsOfService": "http://beego.me/",
+        "contact": {
+            "email": "astaxie@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+    "basePath": "/v1",
+    "paths": {
+        "/account/": {
+            "get": {
+                "tags": [
+                    "account"
+                ],
+                "description": "search account basic infos.",
+                "operationId": "AccountController.account basic infos",
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/.account\""
+                        }
+                    },
+                    "401": {
+                        "description": "\"login error\""
+                    },
+                    "403": {
+                        "description": "\"default error\""
+                    }
+                }
+            }
+        },
+        "/auth/": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "description": "find if u are login status",
+                "operationId": "AuthController.Status of auth",
+                "responses": {
+                    "200": {
+                        "description": "{string} username"
+                    },
+                    "403": {
+                        "description": "\"not login\""
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "description": "Logs into the system by username and password . got cookie if success.",
+                "operationId": "AuthController.Login",
+                "parameters": [
+                    {
+                        "in": "formData",
+                        "name": "username",
+                        "description": "The username for login",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "password",
+                        "description": "The password for login",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} \"%username% login success\""
+                    },
+                    "403": {
+                        "description": "\"user not exist or password error\""
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "auth"
+                ],
+                "description": "the session willbe destory. cookie will be useless.",
+                "operationId": "AuthController.Logout the system",
+                "responses": {
+                    "200": {
+                        "description": "{string} \"logout success\""
+                    }
+                }
+            }
+        },
+        "/command/run/{machine}": {
+            "post": {
+                "tags": [
+                    "command"
+                ],
+                "description": "Run a command within limited time.",
+                "operationId": "CommandController.Run a Command",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "machine",
+                        "description": "The machine name",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "The commad json",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Command"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.CommandResult"
+                        }
+                    },
+                    "401": {
+                        "description": "\"need login\""
+                    },
+                    "403": {
+                        "description": "\"Runtime error\""
+                    }
+                }
+            }
+        },
+        "/command/{machine}": {
+            "post": {
+                "tags": [
+                    "command"
+                ],
+                "description": "a simple command as 'bash -c \"%command%\" '",
+                "operationId": "CommandController.Run a shell script",
+                "parameters": [
+                    {
+                        "in": "formData",
+                        "name": "command",
+                        "description": "The command script content,json format body also works",
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "machine",
+                        "description": "The machine name",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.CommandResult"
+                        }
+                    },
+                    "401": {
+                        "description": "need login"
+                    },
+                    "403": {
+                        "description": "{err} body is err info"
+                    }
+                }
+            }
+        },
+        "/file/{machine}/{pathname}/*": {
+            "get": {
+                "tags": [
+                    "file"
+                ],
+                "description": "List file or dir stat",
+                "operationId": "FileController.List or Download(old version)",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "machine",
+                        "description": "The machine name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "pathname",
+                        "description": "The path to list",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "download",
+                        "description": "if query this, will download file",
+                        "type": "boolean"
+                    },
+                    {
+                        "in": "query",
+                        "name": "list",
+                        "description": "if query this, will list dir",
+                        "type": "boolean"
+                    },
+                    {
+                        "in": "query",
+                        "name": "simple",
+                        "description": "if query this,only return `name` and `isDir`",
+                        "type": "boolean"
+                    },
+                    {
+                        "in": "query",
+                        "name": "mkdir",
+                        "description": "if query this, will mkdir",
+                        "type": "boolean"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{common.Result} result"
+                    },
+                    "401": {
+                        "description": "need login"
+                    },
+                    "403": {
+                        "description": "{err} body is err info"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "file"
+                ],
+                "description": "upload  file",
+                "operationId": "FileController.Upload",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "machine",
+                        "description": "The machine name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "pathname",
+                        "description": "The path to list",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "The content of the file",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/.bytes"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} \"upload ok\""
+                    },
+                    "401": {
+                        "description": "\"need login\""
+                    },
+                    "403": {
+                        "description": "\"default errors\""
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "file"
+                ],
+                "description": "Delete file or dir",
+                "operationId": "FileController.Delete",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "machine",
+                        "description": "The machine name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "pathname",
+                        "description": "The path to list",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "all",
+                        "description": "if query this, will remove all",
+                        "type": "boolean"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} result"
+                    },
+                    "401": {
+                        "description": "need login"
+                    },
+                    "403": {
+                        "description": "{error} body is err info"
+                    }
+                }
+            }
+        },
+        "/job/{machine}": {
+            "get": {
+                "tags": [
+                    "job"
+                ],
+                "description": "Search Job in Queue",
+                "operationId": "JobController.Queue",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "machine",
+                        "description": "The machine name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "resource",
+                        "description": "if query this, will return resource info",
+                        "type": "boolean"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.HPCJob"
+                        }
+                    },
+                    "401": {
+                        "description": "need login"
+                    },
+                    "403": {
+                        "description": "{error} body is err info"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "job"
+                ],
+                "description": "Submit a HPCjob",
+                "operationId": "JobController.Submit",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "machine",
+                        "description": "The machine name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "The job object",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.HPCJob"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} result"
+                    },
+                    "401": {
+                        "description": "need login"
+                    },
+                    "403": {
+                        "description": "err info"
+                    }
+                }
+            }
+        },
+        "/job/{machine}/{jobid}": {
+            "get": {
+                "tags": [
+                    "job"
+                ],
+                "description": "Search Job Info",
+                "operationId": "JobController.JobInfo",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "machine",
+                        "description": "The machine name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "jobid",
+                        "description": "The jobid",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.HPCJob"
+                        }
+                    },
+                    "401": {
+                        "description": "need login"
+                    },
+                    "403": {
+                        "description": "err info"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "job"
+                ],
+                "description": "Delete a job",
+                "operationId": "JobController.Delete",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "machine",
+                        "description": "The machine name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "jobid",
+                        "description": "The jobid",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} result"
+                    },
+                    "401": {
+                        "description": "need login"
+                    },
+                    "403": {
+                        "description": "{error} body is err info"
+                    }
+                }
+            }
+        },
+        "/storage/": {
+            "post": {
+                "tags": [
+                    "storage"
+                ],
+                "description": "example.",
+                "operationId": "StorageController.example",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "commad",
+                        "description": "The commad json",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/.example\""
+                        }
+                    },
+                    "403": {
+                        "description": "\"example\""
+                    }
+                }
+            }
+        },
+        "/user/": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "description": "get all Users",
+                "operationId": "UserController.GetAll",
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "user"
+                ],
+                "description": "create users",
+                "operationId": "UserController.CreateUser",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for user content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{int} models.User.Id"
+                    },
+                    "403": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/user/login": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Logs user into the system",
+                "operationId": "UserController.Login",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "username",
+                        "description": "The username for login",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "password",
+                        "description": "The password for login",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} login success"
+                    },
+                    "403": {
+                        "description": "user not exist"
+                    }
+                }
+            }
+        },
+        "/user/logout": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Logs out current logged in user session",
+                "operationId": "UserController.logout",
+                "responses": {
+                    "200": {
+                        "description": "{string} logout success"
+                    }
+                }
+            }
+        },
+        "/user/{uid}": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "description": "get user by uid",
+                "operationId": "UserController.Get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "description": "The key for staticblock",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "403": {
+                        "description": ":uid is empty"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "user"
+                ],
+                "description": "update the user",
+                "operationId": "UserController.Update",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "description": "The uid you want to update",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for user content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "403": {
+                        "description": ":uid is not int"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "user"
+                ],
+                "description": "delete the user",
+                "operationId": "UserController.Delete",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "description": "The uid you want to delete",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} delete success!"
+                    },
+                    "403": {
+                        "description": "uid is empty"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        ".account\"": {
+            "type": "object"
+        },
+        ".bytes": {
+            "type": "object"
+        },
+        ".example\"": {
+            "type": "object"
+        },
+        "models.Command": {
+            "title": "Command",
+            "type": "object",
+            "properties": {
+                "Dir": {
+                    "type": "string"
+                },
+                "Silence": {
+                    "type": "boolean"
+                },
+                "args": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "env": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "timeout": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "models.CommandResult": {
+            "title": "CommandResult",
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "output": {
+                    "type": "string"
+                },
+                "retcode": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "models.Commander": {
+            "type": "object"
+        },
+        "models.HPCJob": {
+            "title": "HPCJob",
+            "type": "object",
+            "properties": {
+                "args": {
+                    "type": "string"
+                },
+                "cores": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "dir": {
+                    "type": "string"
+                },
+                "infos": {
+                    "type": "string"
+                },
+                "jobargs": {
+                    "type": "string"
+                },
+                "jobfile": {
+                    "type": "string"
+                },
+                "jobid": {
+                    "type": "string"
+                },
+                "jobstate": {
+                    "type": "string"
+                },
+                "myScheduler": {
+                    "$ref": "#/definitions/models.HPCScheduler"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nodes": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "partition": {
+                    "type": "string"
+                },
+                "timelimit": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "models.HPCScheduler": {
+            "type": "object"
+        },
+        "models.Object": {
+            "title": "Object",
+            "type": "object",
+            "properties": {
+                "ObjectId": {
+                    "type": "string"
+                },
+                "PlayerName": {
+                    "type": "string"
+                },
+                "Score": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "models.Profile": {
+            "title": "Profile",
+            "type": "object",
+            "properties": {
+                "Address": {
+                    "type": "string"
+                },
+                "Age": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Email": {
+                    "type": "string"
+                },
+                "Gender": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.User": {
+            "title": "User",
+            "type": "object",
+            "properties": {
+                "Id": {
+                    "type": "string"
+                },
+                "Password": {
+                    "type": "string"
+                },
+                "Profile": {
+                    "$ref": "#/definitions/models.Profile"
+                },
+                "Username": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "user",
+            "description": "Operations about Users\n"
+        },
+        {
+            "name": "auth",
+            "description": "Operations about Auth\n"
+        },
+        {
+            "name": "command",
+            "description": "Operations about Command\n"
+        },
+        {
+            "name": "file",
+            "description": "Operations about Command\n"
+        },
+        {
+            "name": "job",
+            "description": "Operations about Command\n"
+        },
+        {
+            "name": "account",
+            "description": "Operations about Account,(Not implemented), such as look up Cputimes ,quotas ...\n"
+        },
+        {
+            "name": "storage",
+            "description": "Operations about Storages (Not implemented)\n"
+        }
+    ]
+}
