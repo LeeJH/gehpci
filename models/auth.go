@@ -5,6 +5,8 @@ import (
 
 	"gehpci/extends/ldapc"
 
+	"strconv"
+
 	"github.com/astaxie/beego"
 )
 
@@ -94,6 +96,19 @@ func (au *AuthDataLDAP) authpw(username, password string) *User {
 	entry, _ := au.Authenticate(username, password)
 	if entry != nil {
 		log.Printf("Error:Not implement yet! Auth LDAP should pass")
+		uid, _ := strconv.Atoi(entry.GetAttributeValue("uidNumber"))
+		gid, _ := strconv.Atoi(entry.GetAttributeValue("gidNumber"))
+		home := entry.GetAttributeValue("homeDirectory")
+		shell := entry.GetAttributeValue("loginShell")
+		user := User{
+			Username: username,
+			Uid:      uint32(uid),
+			Gid:      uint32(gid),
+			Home:     home,
+			Shell:    shell}
+		AddUser(user)
+		return &user
+
 	}
 	return nil
 }
