@@ -15,6 +15,7 @@ type CommandController struct {
 }
 type BaseController struct {
 	beego.Controller
+	user *models.User
 }
 
 func (c *BaseController) Prepare() {
@@ -27,6 +28,9 @@ func (c *BaseController) Prepare() {
 		c.ServeJSON()
 		c.StopRun()
 	}
+	user := sess.Get("user")
+	c.user = user.(*models.User)
+
 }
 
 func serveError403(c *beego.Controller, err error) {
@@ -66,6 +70,7 @@ func (c *CommandController) Run() {
 		c.serveErrorCode(403, err) //serveError403(c, err)
 		return
 	}
+	cmd.User = c.user
 	result, err := cmd.Run()
 	if err != nil {
 		//serveError403(c, err)

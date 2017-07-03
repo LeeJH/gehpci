@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"syscall"
 	"time"
+
+	"github.com/astaxie/beego"
 )
 
 // ErrTimeout for server request timeout
@@ -24,6 +26,7 @@ type Command struct {
 	Timeout int      `json:"timeout"`
 	Silence bool     `json:"Silence"`
 	Commander
+	*User
 }
 
 type CommandShell struct {
@@ -63,6 +66,8 @@ func init() {
 	// if  ....
 	// else ...
 	cmderD := &CommanderD{}
+	setuid := beego.AppConfig.DefaultInt("local::setuid", 0)
+	cmderD.setUid = uint32(setuid)
 	modelsCommander = cmderD
 	log.Printf("init ok : %#v \n", modelsCommander)
 }
@@ -72,6 +77,14 @@ type CommanderD struct {
 }
 
 func (c *CommanderD) RunCommand(cmd *Command) (result *CommandResult, err error) {
+	uid := cmd.User.GetUID()
+	if uid == 0 {
+		uid = c.setUid
+	}
+	return c.RunCommandUID(cmd, uid)
+}
+
+func (c *CommanderD) RunCommandUID(cmd *Command, uid uint32) (result *CommandResult, err error) {
 	result = &CommandResult{}
 	var outbuf, errbuf bytes.Buffer
 	sigterm := make(chan int, 1)
@@ -85,8 +98,9 @@ func (c *CommanderD) RunCommand(cmd *Command) (result *CommandResult, err error)
 		oscmd.Stdout, oscmd.Stderr = &outbuf, &errbuf
 	}
 	// if setuid = true
-	if c.setUid != 0 {
-		uid := c.setUid
+	if uid != 0 {
+		//if c.setUid != 0 {
+		//uid := c.setUid
 		sysattr := &syscall.SysProcAttr{
 			Credential: &syscall.Credential{Uid: uint32(uid)},
 		}

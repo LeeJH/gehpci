@@ -22,7 +22,7 @@ type AuthController struct {
 // @router / [post]
 func (c *AuthController) Login() {
 	sess := c.StartSession()
-	upo := models.NewAuthMD()
+	upo := models.NewAuthM()
 	if strings.HasPrefix(c.Ctx.Input.Header("Content-Type"), "application/json") {
 		json.Unmarshal(c.Ctx.Input.RequestBody, upo)
 	} else {
@@ -31,6 +31,7 @@ func (c *AuthController) Login() {
 	}
 	if upo.Auth() {
 		sess.Set("username", upo.Username)
+		sess.Set("user", upo.GetUser())
 		c.Data["json"] = upo.Username + " login success"
 	} else {
 		c.Data["json"] = "user not exist"

@@ -12,7 +12,7 @@ var (
 
 func init() {
 	UserList = make(map[string]*User)
-	u := User{"user_11111", "astaxie", "11111", Profile{"male", 20, "Singapore", "astaxie@gmail.com"}}
+	u := User{"user_11111", "astaxie", "11111", 0, 0, "", "", Profile{"1111111", "Singapore", "astaxie@gmail.com"}}
 	UserList["user_11111"] = &u
 }
 
@@ -20,12 +20,15 @@ type User struct {
 	Id       string
 	Username string
 	Password string
+	Uid      uint32
+	Gid      uint32
+	Home     string
+	Shell    string
 	Profile  Profile
 }
 
 type Profile struct {
-	Gender  string
-	Age     int
+	Phone   string
 	Address string
 	Email   string
 }
@@ -55,15 +58,15 @@ func UpdateUser(uid string, uu *User) (a *User, err error) {
 		if uu.Password != "" {
 			u.Password = uu.Password
 		}
-		if uu.Profile.Age != 0 {
-			u.Profile.Age = uu.Profile.Age
-		}
+		//if uu.Profile.Age != 0 {
+		//	u.Profile.Age = uu.Profile.Age
+		//}
 		if uu.Profile.Address != "" {
 			u.Profile.Address = uu.Profile.Address
 		}
-		if uu.Profile.Gender != "" {
-			u.Profile.Gender = uu.Profile.Gender
-		}
+		//if uu.Profile.Gender != "" {
+		//	u.Profile.Gender = uu.Profile.Gender
+		//}
 		if uu.Profile.Email != "" {
 			u.Profile.Email = uu.Profile.Email
 		}
@@ -81,6 +84,19 @@ func Login(username, password string) bool {
 	return false
 }
 
+func LoginUser(username, password string) *User {
+	for _, u := range UserList {
+		if u.Username == username && u.Password == password {
+			return u
+		}
+	}
+	return nil
+}
+
 func DeleteUser(uid string) {
 	delete(UserList, uid)
+}
+
+func (user *User) GetUID() uint32 {
+	return 0
 }
