@@ -103,7 +103,8 @@ func newAuthLDAP() *AuthDataLDAP {
 	host := beego.AppConfig.DefaultString("ldap::host", "localhost")
 	port := beego.AppConfig.DefaultInt("ldap::port", 389)
 	dn := beego.AppConfig.DefaultString("ldap::dn", "ou=people,dc=com")
-	dn = "%s," + dn
+	dn = "uid=%s," + dn
+        log.Println("dn is : " , dn)
 	ldapclient := &ldapc.Client{
 		Protocol:  ldapc.LDAP,
 		Host:      host,

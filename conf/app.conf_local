@@ -5,16 +5,12 @@ autorender = false
 copyrequestbody = true
 EnableDocs = true
 sessionon = true
-distmode = dist
+distmode = local
 jobmode = shell
 ; local for local run , most basic mode , for self use . 
 [dist]
-auth = ldap
+auth = local
 [shell]
 job = ./shells/slurmSS
 [local]
 setuid = true
-[ldap]
-host = lam-yhpc-server
-port = 389
-dn = "ou=people,dc=yhpc"
