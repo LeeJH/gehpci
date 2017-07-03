@@ -95,7 +95,6 @@ type AuthDataLDAP struct {
 func (au *AuthDataLDAP) authpw(username, password string) *User {
 	entry, _ := au.Authenticate(username, password)
 	if entry != nil {
-		log.Printf("Error:Not implement yet! Auth LDAP should pass")
 		uid, _ := strconv.Atoi(entry.GetAttributeValue("uidNumber"))
 		gid, _ := strconv.Atoi(entry.GetAttributeValue("gidNumber"))
 		home := entry.GetAttributeValue("homeDirectory")
@@ -119,7 +118,6 @@ func newAuthLDAP() *AuthDataLDAP {
 	port := beego.AppConfig.DefaultInt("ldap::port", 389)
 	dn := beego.AppConfig.DefaultString("ldap::dn", "ou=people,dc=com")
 	dn = "uid=%s," + dn
-        log.Println("dn is : " , dn)
 	ldapclient := &ldapc.Client{
 		Protocol:  ldapc.LDAP,
 		Host:      host,
