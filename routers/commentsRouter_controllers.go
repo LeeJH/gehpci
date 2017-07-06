@@ -215,4 +215,12 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
+	beego.GlobalControllerRouter["gehpci/controllers:WebSocketController"] = append(beego.GlobalControllerRouter["gehpci/controllers:WebSocketController"],
+		beego.ControllerComments{
+			Method: "BindBash",
+			Router: `/bindbash/:machine`,
+			AllowHTTPMethods: []string{"get"},
+			MethodParams: param.Make(),
+			Params: nil})
+
 }
