@@ -25,11 +25,17 @@ func init() {
 				&controllers.AuthController{},
 			),
 		),
-		beego.NSNamespace("/wc",
+		beego.NSNamespace("/ws",
 			beego.NSInclude(
 				&controllers.WebSocketController{},
 			),
 		),
+		beego.NSNamespace("/proxys",
+			beego.NSInclude(
+				&controllers.ProxysController{},
+			),
+		),
+
 		beego.NSNamespace("/command",
 			beego.NSInclude(
 				&controllers.CommandController{},

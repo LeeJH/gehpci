@@ -33,7 +33,7 @@ Options :
 	not bash but other program
 	not line buf but bytes
 	return response...bash-x$
-	more power new
+	more power new function
 */
 
 type WSMessage struct {

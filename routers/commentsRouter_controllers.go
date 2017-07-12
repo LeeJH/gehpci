@@ -151,6 +151,30 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
+	beego.GlobalControllerRouter["gehpci/controllers:ProxysController"] = append(beego.GlobalControllerRouter["gehpci/controllers:ProxysController"],
+		beego.ControllerComments{
+			Method: "Proxys",
+			Router: `/:machine`,
+			AllowHTTPMethods: []string{"post"},
+			MethodParams: param.Make(),
+			Params: nil})
+
+	beego.GlobalControllerRouter["gehpci/controllers:ProxysController"] = append(beego.GlobalControllerRouter["gehpci/controllers:ProxysController"],
+		beego.ControllerComments{
+			Method: "ListProxys",
+			Router: `/:machine`,
+			AllowHTTPMethods: []string{"get"},
+			MethodParams: param.Make(),
+			Params: nil})
+
+	beego.GlobalControllerRouter["gehpci/controllers:ProxysController"] = append(beego.GlobalControllerRouter["gehpci/controllers:ProxysController"],
+		beego.ControllerComments{
+			Method: "DeleteProxy",
+			Router: `/:machine/:proxyid`,
+			AllowHTTPMethods: []string{"delete"},
+			MethodParams: param.Make(),
+			Params: nil})
+
 	beego.GlobalControllerRouter["gehpci/controllers:StorageController"] = append(beego.GlobalControllerRouter["gehpci/controllers:StorageController"],
 		beego.ControllerComments{
 			Method: "About",
