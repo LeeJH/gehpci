@@ -36,12 +36,12 @@ type HPCJob struct {
 	//"scale_memGB" , 　需要多少内存
 	Nodes int64 `json:"nodes"` //"scale_Nodes" , 需要多少节点
 	// ? ? ? Scheduler string `json:"scheduler"` //"jobfile_args"，　作业脚本附加参数 　 一个提交例子如下：
-	Args        string `json:"args"` // args for scheduler
-	JobFile     string `json:"jobfile"`
-	JobArgs     string `json:"jobargs"`
-	JobID       string `json:"jobid"`
-	JobState    string `json:"jobstate"`
-	Infos       string `json:"infos"` // may be used for extension
+	Args        []string `json:"args"` // args for scheduler
+	JobFile     string   `json:"jobfile"`
+	JobArgs     []string `json:"jobargs"` // args for job
+	JobID       string   `json:"jobid"`
+	JobState    string   `json:"jobstate"`
+	Infos       string   `json:"infos"` // may be used for extension
 	myScheduler HPCScheduler
 }
 
@@ -86,8 +86,8 @@ func init() {
 		exapleSD := &exampleScheduler{}
 		modelsScheduler = exapleSD
 	case "local":
-		exapleSD := &localScheduler{}
-		exapleSD.returnFile = true
+		exapleSD := NewLocalScheduler()
+		exapleSD.returnFile = false
 		modelsScheduler = exapleSD
 	default:
 		exapleSD := &shellScheduler{}

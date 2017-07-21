@@ -13,3 +13,18 @@ bee run -gendoc=true -downdoc=true
 bee run 
 
 ## Reference
+
+## TO-DOs and BUGs 
+
+### version alpha
+
+* add a local job manager 
+* add tests 
+* opt /job api 
+
+### version beta
+
+* add stroage support
+* add account support 
+* add router support 
+* Add admin support 

@@ -11,7 +11,7 @@ function oneInfo {
   echo "{"
   echo \"partition\":\"$1\", #  $#
   echo \"state\":\"$3\",
-  echo \"nodes\":\"$4\"
+  echo \"nodes\":$4
   echo "}"
 }
 

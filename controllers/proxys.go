@@ -40,7 +40,7 @@ func (t *myTransport) RoundTrip(request *http.Request) (*http.Response, error) {
 }
 
 // @Title build a proxy
-// @Description
+// @Description create a port transport . use :0 for dynamic port .
 // @Param       machine            path    string  true            "The machine name"
 // @Param	body	body	models.PortProxy	true	"The commad json"
 // @Success 200 {object} models.PortProxy
@@ -51,6 +51,8 @@ func (this *ProxysController) Proxys() {
 	log.Printf("user: %#v", this.user)
 	pp := models.NewPortProxy(this.user)
 	err := json.Unmarshal(this.Ctx.Input.RequestBody, pp)
+	pp.Id = ""
+	log.Printf("new pp : %#v", pp)
 	if err != nil {
 		this.serveErrorCode(403, err) //serveError403(c, err)
 		return

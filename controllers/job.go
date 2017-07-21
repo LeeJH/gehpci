@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"gehpci/models"
 )
 
@@ -31,7 +32,9 @@ func (c *JobController) Submit() {
 		serveError403(&c.Controller, err)
 		return
 	}
-	c.Data["json"] = "submit job " + jobid
+	c.Data["json"] = struct {
+		Jobid string `json:"jobid"`
+	}{Jobid: fmt.Sprint(jobid)}
 	c.ServeJSON()
 }
 

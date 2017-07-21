@@ -47,6 +47,8 @@ func (c *FileController) Delete() {
 	c.ServeJSON()
 }
 
+// ### /:machine/:pathname/*
+
 // @Title List or Download(old version)
 // @Description List file or dir stat
 // @Param       machine            path    string  true            "The machine name"
@@ -58,7 +60,7 @@ func (c *FileController) Delete() {
 // @Success 200 {common.Result} result
 // @Failure 403 {err} body is err info
 // @Failure 401 need login
-// @router /:machine/:pathname/* [get]
+// @router /:machine/?:pathname/* [get]
 func (c *FileController) ListorDownload() {
 	pathname, _, _ := getPath(&c.Controller)
 	download := c.Ctx.Input.Query("download")
@@ -109,9 +111,9 @@ ListorDownloadError:
 }
 
 func getPath(c *beego.Controller) (pathname, machine string, err error) {
-	log.Printf("input : %#v \n", c.Ctx.Input)
-	log.Printf("machine : %#v \n", c.Ctx.Input.Param(":machine"))
-	log.Printf("download : %#v \n", c.Ctx.Input.Query("download"))
+	//log.Printf("input : %#v \n", c.Ctx.Input)
+	//log.Printf("machine : %#v \n", c.Ctx.Input.Param(":machine"))
+	//log.Printf("download : %#v \n", c.Ctx.Input.Query("download"))
 	filename := c.Ctx.Input.Param(":splat")
 	machine = c.Ctx.Input.Param(":machine")
 	pathname = c.Ctx.Input.Param(":pathname")
@@ -175,6 +177,14 @@ func (c *FileController) ListDir() {
 // @router /:machine/:pathname/* [put]
 func (c *FileController) Upload() {
 	filename, _, _ := getPath(&c.Controller)
+	log.Print(c.Ctx.Input.Header("Content-Type"))
+	if c.Ctx.Input.Header("Content-Type") == "application/x-www-form-urlencoded" {
+		// #c.Ctx.Request.Body   // # = "application/octet-stream"
+		c.Ctx.Output.SetStatus(403)
+		c.Data["json"] = "Please set HTTP Header \"Content-Type\"=\"application/octet-stream\"  "
+		c.ServeJSON()
+		return
+	}
 	_, err := os.Stat(filename)
 	if err == nil {
 		c.Ctx.Output.SetStatus(403)
@@ -191,6 +201,7 @@ func (c *FileController) Upload() {
 		return
 	}
 	dst, _ := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
+	//log.Printf("%#v\n", c.Ctx.Request)
 	wn, err := io.Copy(dst, c.Ctx.Request.Body)
 	if err != nil {
 		c.Ctx.Output.SetStatus(403)
