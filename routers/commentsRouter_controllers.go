@@ -66,7 +66,7 @@ func init() {
 	beego.GlobalControllerRouter["gehpci/controllers:FileController"] = append(beego.GlobalControllerRouter["gehpci/controllers:FileController"],
 		beego.ControllerComments{
 			Method: "ListorDownload",
-			Router: `/:machine/?:pathname/*`,
+			Router: `/:machine/:pathname/*`,
 			AllowHTTPMethods: []string{"get"},
 			MethodParams: param.Make(),
 			Params: nil})

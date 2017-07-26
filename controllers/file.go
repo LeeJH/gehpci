@@ -60,7 +60,7 @@ func (c *FileController) Delete() {
 // @Success 200 {common.Result} result
 // @Failure 403 {err} body is err info
 // @Failure 401 need login
-// @router /:machine/?:pathname/* [get]
+// @router /:machine/:pathname/* [get]
 func (c *FileController) ListorDownload() {
 	pathname, _, _ := getPath(&c.Controller)
 	download := c.Ctx.Input.Query("download")
@@ -141,41 +141,18 @@ func downloadFile(fc *beego.Controller, filename string) (err error) {
 	return
 }
 
-/*// @Title List a dir
-// @Description List file or dir stat
-// @Param       machine            path    string  true            "The machine name"
-// @Param       pathname            path    string  true            "The path to list"
-// @Param       simple            query    bool  false            "if query this,only return `name` and `isDir`"
-// @Success 200 {common.Result} result
-// @Failure 403 {err} body is err info
-// @Failure 401 need login
-// @router /list/:machine/:pathname/* [get]
-func (c *FileController) ListDir() {
-	pathname, _, _ := getPath(&c.Controller)
-	fsl, err := models.GetDirList(pathname)
-	if err != nil {
-		c.Ctx.Output.SetStatus(403)
-		c.Data["json"] = "Error : " + err.Error()
-		log.Printf("Error : %s\n", err.Error())
-		c.ServeJSON()
-		return
-	}
-	c.Data["json"] = fsl
-	c.ServeJSON()
-	return
-}
-*/
-
 // @Title Upload
 // @Description upload  file
 // @Param       machine            path    string  true            "The machine name"
 // @Param       pathname            path    string  false            "The path to list"
+// @Param       overwrite            query    bool  false            "if query this, will overwrite"
 // @Param       body body bytes true            "The content of the file"
 // @Success 200 {string} "upload ok"
 // @Failure 403 "default errors"
 // @Failure 401 "need login"
 // @router /:machine/:pathname/* [put]
 func (c *FileController) Upload() {
+	overwrite := c.Ctx.Input.Query("overwrite")
 	filename, _, _ := getPath(&c.Controller)
 	log.Print(c.Ctx.Input.Header("Content-Type"))
 	if c.Ctx.Input.Header("Content-Type") == "application/x-www-form-urlencoded" {
@@ -187,10 +164,14 @@ func (c *FileController) Upload() {
 	}
 	_, err := os.Stat(filename)
 	if err == nil {
-		c.Ctx.Output.SetStatus(403)
-		c.Data["json"] = "file  exsit!"
-		c.ServeJSON()
-		return
+		if overwrite == "true" {
+			os.Remove(filename)
+		} else {
+			c.Ctx.Output.SetStatus(403)
+			c.Data["json"] = "file  exsit!"
+			c.ServeJSON()
+			return
+		}
 	}
 	err = nil
 	_, err = os.Stat(path.Dir(filename))
